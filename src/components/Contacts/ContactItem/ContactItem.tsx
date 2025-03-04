@@ -22,7 +22,7 @@ const ContactItem: React.FC<Props> = ({contact, deleteLoading, onDeleteClick}) =
     }
 
     return (
-        <div className="card mb-2 text-center" onClick={handleOpenModal} style={{cursor: 'pointer', maxWidth: '400px'}}>
+        <div className="card mb-2 text-center" onClick={handleOpenModal} style={{cursor: 'pointer'}}>
             <div className="card-body d-flex align-items-center">
                 <img src={imageUrl} alt={contact.name} className="rounded-circle me-5"
                      style={{width: '100px', height: '100px', objectFit: 'cover'}}/>
