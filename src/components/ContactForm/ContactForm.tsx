@@ -43,14 +43,21 @@ const ContactForm: React.FC<Props> = ({onSubmitFormToAddContact, idContact, isEd
             setForm(oneContact);
             setPreviewImage(oneContact.imageUrl || null);
         }
-    }, [fetchOneContact, idContact, oneContact])
+    }, [fetchOneContact, idContact, oneContact]);
 
     const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {value, name} = e.target;
         setForm(prevState => ({...prevState, [name]: value}));
 
         if (name === "imageUrl") {
-            setPreviewImage(value.trim() ? value : null);
+            if (value.trim()) {
+                const img = new Image();
+                img.src = value.trim();
+                img.onload = () => setPreviewImage(value.trim());
+                img.onerror = () => setPreviewImage(null);  // Если ссылка невалидна, не показывать превью
+            } else {
+                setPreviewImage(null);
+            }
         }
     };
 
@@ -128,7 +135,8 @@ const ContactForm: React.FC<Props> = ({onSubmitFormToAddContact, idContact, isEd
                                 src={previewImage}
                                 alt="Preview"
                                 className="rounded-circle"
-                                style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                                style={{ width: '100px', height: '100px', objectFit: 'cover', border: '1px solid #ccc',        // Добавил границу для проверки
+                                    backgroundColor: '#f0f0f0' }}
                             />
                         </div>
                     )}
