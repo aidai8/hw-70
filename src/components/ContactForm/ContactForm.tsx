@@ -26,6 +26,7 @@ const ContactForm: React.FC<Props> = ({onSubmitFormToAddContact, idContact, isEd
     const fetchOneContactLoading = useAppSelector(selectFetchOneContactLoading);
     const oneContact = useAppSelector(selectOneContact);
     const [form, setForm] = useState<ContactMutation>(initialForm);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
 
     const fetchOneContact = useCallback(async (id: string | undefined) => {
         if (id) {
@@ -40,12 +41,17 @@ const ContactForm: React.FC<Props> = ({onSubmitFormToAddContact, idContact, isEd
             void fetchOneContact(idContact);
         } else if (oneContact && idContact) {
             setForm(oneContact);
+            setPreviewImage(oneContact.imageUrl || null);
         }
     }, [fetchOneContact, idContact, oneContact])
 
     const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {value, name} = e.target;
         setForm(prevState => ({...prevState, [name]: value}));
+
+        if (name === "imageUrl") {
+            setPreviewImage(value.trim() ? value : null);
+        }
     };
 
 
@@ -116,6 +122,16 @@ const ContactForm: React.FC<Props> = ({onSubmitFormToAddContact, idContact, isEd
                         />
                     </div>
 
+                    {previewImage && (
+                        <div className="mt-3 text-center">
+                            <img
+                                src={previewImage}
+                                alt="Preview"
+                                className="rounded-circle"
+                                style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                            />
+                        </div>
+                    )}
 
                     <button type="submit" className="btn btn-primary mt-4" disabled={isLoading}>
                         <span className="me-2">{isEdit ? 'Edit' : 'Add'}</span>
