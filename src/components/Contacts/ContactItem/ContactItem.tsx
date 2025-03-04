@@ -1,7 +1,8 @@
 import {Link} from "react-router-dom";
 import ButtonSpinner from "../../UI/Spinner/ButtonSpinner/ButtonSpinner.tsx";
 import {Contact} from "../../../types";
-import React from "react";
+import React, {useState} from "react";
+import Modal from "../../UI/Modal/Modal.tsx";
 
 interface Props {
     contact: Contact;
@@ -10,39 +11,42 @@ interface Props {
 }
 
 const ContactItem: React.FC<Props> = ({contact, deleteLoading, onDeleteClick}) => {
-    const defaultImage = 'https://pbs.twimg.com/media/GY5XoygXQAADvvQ.png';
-    const imageUrl = contact.imageUrl || defaultImage;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleOpenModal = () => setIsModalOpen(true);
+    const handleCloseModal = () => setIsModalOpen(false);
+
+    let imageUrl = 'https://pbs.twimg.com/media/GY5XoygXQAADvvQ.png';
+    if (contact.imageUrl) {
+        imageUrl = contact.imageUrl;
+    }
 
     return (
-        <div className="card mb-2 shadow-sm rounded-3 overflow-hidden">
-            <div className="row g-0 align-items-center">
-                <div className="col-sm-4 d-flex justify-content-center align-items-center p-3 border-end">
-                    <div className="rounded-circle overflow-hidden shadow-sm" style={{ width: "150px", height: "150px" }}>
-                        <img
-                            src={imageUrl}
-                            alt={contact.name}
-                            className="img-fluid w-100 h-100"
-                            style={{ objectFit: "cover" }}
-                        />
-                    </div>
-                </div>
-                <div className="col-sm-8">
-                    <div className="card-body">
-                        <h5 className="card-title fw-bold">{contact.name}</h5>
-                        <p className="card-text text-primary mb-1">{contact.number}</p>
-                        <p className="card-text text-secondary">{contact.email}</p>
-                        <div className="d-flex">
-                            <Link to={`/edit-contact/${contact.id}`} className="btn btn-secondary btn-sm me-2">Edit</Link>
-                            <button
-                                className="btn btn-danger btn-sm"
-                                onClick={onDeleteClick}
-                            >
-                                Delete {deleteLoading && deleteLoading === contact.id && <ButtonSpinner />}
-                            </button>
-                        </div>
-                    </div>
+        <div className="card mb-2 text-center" onClick={handleOpenModal} style={{cursor: 'pointer', maxWidth: '400px'}}>
+            <div className="card-body d-flex align-items-center">
+                <img src={imageUrl} alt={contact.name} className="rounded-circle me-5"
+                     style={{width: '100px', height: '100px', objectFit: 'cover'}}/>
+                <div className="d-flex flex-column text-start">
+                <h2 className="card-title mt-2">{contact.name}</h2>
+                <small className="text-muted">Click to see more</small>
                 </div>
             </div>
+
+            <Modal show={isModalOpen} onClose={handleCloseModal}>
+                <div className="text-center">
+                    <h4 className="mb-3">Contact info</h4>
+                    <img src={imageUrl} alt={contact.name} className="rounded-circle" style={{ width: '150px', height: '150px', objectFit: 'cover' }} />
+                    <h5 className="mt-3">{contact.name}</h5>
+                    <p className="text-primary mb-1">{contact.number}</p>
+                    <p className="text-secondary">{contact.email}</p>
+                    <div>
+                        <Link to={`/edit-contact/${contact.id}`} className="btn btn-secondary">Edit</Link>
+                        <button className="btn btn-danger mx-3" onClick={onDeleteClick}>
+                            Delete {deleteLoading && deleteLoading === contact.id && <ButtonSpinner/>}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 };
